@@ -1,0 +1,43 @@
+// {
+//   "extends": "../../tsconfig.build.json",
+//   "compilerOptions": {
+//     "declaration": false,
+//     "rootDir": "src",  // <— important
+//     "outDir": "../../dist/apps/booking-service"
+//   },
+//   "include": [
+//     "src/**/*.ts",
+//     "../../libs/**/*.ts"
+//   ],
+//   "exclude": [
+//     "../../libs/**/*.spec.ts",
+//     "../../libs/**/*.test.ts",
+//     "**/*.spec.ts",
+//     "**/*.test.ts",
+//     "**/__tests__/**",
+//     "node_modules",
+//     "dist"
+//   ]
+// }
+
+
+
+{
+  "extends": "../../tsconfig.build.json",
+  "compilerOptions": {
+    "declaration": false,
+    "rootDir": "../../",  // 👈 must cover the entire monorepo
+    "outDir": "../../dist/apps/booking-service"
+  },
+  "include": [
+    "apps/booking-service/src/**/*.ts", // 👈 absolute from root
+    "libs/**/*.ts"
+  ],
+  "exclude": [
+    "**/*.spec.ts",
+    "**/*.test.ts",
+    "**/__tests__/**",
+    "node_modules",
+    "dist"
+  ]
+}

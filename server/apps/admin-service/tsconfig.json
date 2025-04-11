@@ -1,0 +1,21 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "compilerOptions": {
+    "declaration": false,
+    "rootDir": "../../",  // ✅ absolute from monorepo root
+    "outDir": "../../dist/apps/admin-service"
+  },
+  "include": [
+    "apps/admin-service/src/**/*.ts",
+    "libs/**/*.ts"
+  ],
+  "exclude": [
+    "libs/**/*.spec.ts",
+    "libs/**/*.test.ts",
+    "**/*.spec.ts",
+    "**/*.test.ts",
+    "**/__tests__/**",
+    "node_modules",
+    "dist"
+  ]
+}
