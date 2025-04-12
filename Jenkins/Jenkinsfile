@@ -1,0 +1,105 @@
+pipeline {
+  agent any
+
+  tools {
+    git 'Default' 
+  }
+
+  environment {
+    SCANNER_HOME = tool 'sonar-scanner'
+  }
+
+  stages {
+    stage('Clean Workspace') {
+      steps {
+        cleanWs()
+      }
+    }
+
+    stage('Checkout Code') {
+      steps {
+        git branch: 'main',
+            credentialsId: 'git-token',
+            url: 'https://github.com/Sourav01112/nestjs-react-fullstack-devops.git'
+      }
+    }
+
+    stage('Install Dependencies') {
+      agent {
+        docker {
+          image 'node-java-dev:20'
+          args '-u root'
+        }
+      }
+      steps {
+        dir('server') {
+          sh 'yarn install'
+        }
+      }
+    }
+
+    // stage('OWASP Dependency Check') {
+    //   agent {
+    //     docker {
+    //       image 'node-java-dev:20'
+    //       args '-u root'
+    //     }
+    //   }
+    //   steps {
+    //     dir('server') {
+    //       dependencyCheck additionalArguments: '--scan . --failOnCVSS 7 --disableYarnAudit --disableNodeAudit', odcInstallation: 'DC'
+    //       dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
+    //     }
+    //   }
+    // }
+
+    // stage('SonarQube') {
+    //   agent {
+    //     docker {
+    //       image 'node-java-dev:20'
+    //       args '-u root'
+    //     }
+    //   }
+    //   steps {
+    //     withSonarQubeEnv('sonar') {
+    //       sh '''
+    //         $SCANNER_HOME/bin/sonar-scanner \
+    //           -Dsonar.projectKey=Vbrowser \
+    //           -Dsonar.projectName=Vbrowser \
+    //           -Dsonar.sources=server \
+    //           -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info \
+    //           -Dsonar.sourceEncoding=UTF-8 
+    //       '''
+    //       sh 'echo SONAR_HOST_URL=$SONAR_HOST_URL'
+    //     }
+    //   }
+    // }
+
+    stage('Docker Build & Tag Images') {
+         agent {
+        docker {
+          image 'node-java-dev:20'
+          args '-u root'
+        }
+         }
+      steps {
+        script {
+          withDockerRegistry(credentialsId: 'docker-token', toolName: 'Docker') {
+                dir('server') {
+          sh 'ls -la' 
+          sh 'docker-compose -f docker-compose.yml build'
+        }
+          }
+        }
+      }
+    }
+    
+  }
+
+  post {
+    always {
+      echo "End cleanup: wiping workspace"
+      cleanWs()
+    }
+  }
+}
