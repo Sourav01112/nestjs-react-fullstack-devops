@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   booking-service:
-    image: sourav01112/booking-service:latest
+    image: sourav0112/booking-service:latest
     container_name: nestjs-booking-service
     build:
       context: .
@@ -18,7 +18,7 @@ services:
       - nestjs-monrepo
 
   admin-service:
-    image: sourav01112/admin-service:latest
+    image: sourav0112/admin-service:latest
     container_name: nestjs-admin-service
     build:
       context: .
