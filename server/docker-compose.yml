@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   booking-service:
-    image: sourav0112/booking-service:latest
+    image: sourav0112/booking-service:v1.1
     container_name: nestjs-booking-service
     build:
       context: .
@@ -17,21 +17,21 @@ services:
     networks:
       - nestjs-monrepo
 
-  admin-service:
-    image: sourav0112/admin-service:latest
-    container_name: nestjs-admin-service
-    build:
-      context: .
-      dockerfile: ./apps/admin-service/Dockerfile
-    ports:
-      - "8002:8002"
-    volumes:
-      - .:/src:cached
-    environment:
-      - MONGO_URL=mongodb+srv://sourav:chaudhary@cluster0.5wbresh.mongodb.net/?retryWrites=true&w=majority/Nestjs-callbooking
-      - PORT=8002
-    networks:
-      - nestjs-monrepo
+  # admin-service:
+  #   image: sourav0112/admin-service:latest
+  #   container_name: nestjs-admin-service
+  #   build:
+  #     context: .
+  #     dockerfile: ./apps/admin-service/Dockerfile
+  #   ports:
+  #     - "8002:8002"
+  #   volumes:
+  #     - .:/src:cached
+  #   environment:
+  #     - MONGO_URL=mongodb+srv://sourav:chaudhary@cluster0.5wbresh.mongodb.net/?retryWrites=true&w=majority/Nestjs-callbooking
+  #     - PORT=8002
+  #   networks:
+  #     - nestjs-monrepo
 
 
 networks:

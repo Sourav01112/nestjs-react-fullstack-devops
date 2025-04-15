@@ -1,0 +1,41 @@
+kubectl get deployments --all-namespaces
+kubectl get pods -n booking
+ kubectl exec -n <ns> <pod-name> -- printenv | grep MONGO_URL
+kubectl config set-context --current --namespace=booking
+
+# to stop docker containers at once
+ docker stop $(docker ps -q --filter "name=4-node-cluster-")
+
+# to start docker containers at once
+docker start $(docker ps -a -q --filter "name=4-node-cluster-)
+
+
+
+kind delete cluster --name 4-node-cluster
+
+
+
+docker images | grep sourav0112
+docker rmi -f $(docker images | grep sourav0112 | awk '{print $3}')
+
+
+# Deletes <none> tag images
+docker image prune -f
+
+
+# Extract all containers using name (stopped/active)
+ docker ps -aq --filter "name=nestjs-"
+
+# Remove
+ docker rm $(docker ps -aq --filter "name=nestjs-")
+
+
+ kubectl rollout restart deployment booking-service
+
+ kubectl exec -it booking-service-fccf9bfbf-945z5 -n booking -- sh
+
+kubectl port-forward -n booking svc/booking-service 8001:80
+
+# This command copies your local image into all the KIND nodes.
+kind load docker-image sourav0112/booking-service:v1.1 --name 4-node-cluster
+

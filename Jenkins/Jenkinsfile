@@ -21,6 +21,9 @@ pipeline {
         git branch: 'main',
             credentialsId: 'git-token',
             url: 'https://github.com/Sourav01112/nestjs-react-fullstack-devops.git'
+
+        sh 'pwd'
+        sh 'ls -la'
       }
     }
 
@@ -38,67 +41,107 @@ pipeline {
       }
     }
 
-    // stage('OWASP Dependency Check') {
-    //   agent {
-    //     docker {
-    //       image 'node-java-dev:20'
-    //       args '-u root'
-    //     }
-    //   }
-    //   steps {
-    //     dir('server') {
-    //       dependencyCheck additionalArguments: '--scan . --failOnCVSS 7 --disableYarnAudit --disableNodeAudit', odcInstallation: 'DC'
-    //       dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
-    //     }
-    //   }
-    // }
-
-    // stage('SonarQube') {
-    //   agent {
-    //     docker {
-    //       image 'node-java-dev:20'
-    //       args '-u root'
-    //     }
-    //   }
-    //   steps {
-    //     withSonarQubeEnv('sonar') {
-    //       sh '''
-    //         $SCANNER_HOME/bin/sonar-scanner \
-    //           -Dsonar.projectKey=Vbrowser \
-    //           -Dsonar.projectName=Vbrowser \
-    //           -Dsonar.sources=server \
-    //           -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info \
-    //           -Dsonar.sourceEncoding=UTF-8 
-    //       '''
-    //       sh 'echo SONAR_HOST_URL=$SONAR_HOST_URL'
-    //     }
-    //   }
-    // }
-
-    stage('Docker Build & Tag Images') {
-         agent {
+    stage('OWASP Dependency Check') {
+      agent {
         docker {
           image 'node-java-dev:20'
           args '-u root'
         }
-         }
+      }
+      steps {
+        dir('server') {
+          dependencyCheck additionalArguments: '--scan . --failOnCVSS 7 --disableYarnAudit --disableNodeAudit', odcInstallation: 'DC'
+          dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
+        }
+      }
+    }
+
+    stage('SonarQube') {
+      agent {
+        docker {
+          image 'node-java-dev:20'
+          args '-u root'
+        }
+      }
+      steps {
+        withSonarQubeEnv('sonar') {
+          sh '''
+            $SCANNER_HOME/bin/sonar-scanner \
+              -Dsonar.projectKey=Vbrowser \
+              -Dsonar.projectName=Vbrowser \
+              -Dsonar.sources=server \
+              -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info \
+              -Dsonar.sourceEncoding=UTF-8 
+          '''
+          sh 'echo SONAR_HOST_URL=$SONAR_HOST_URL'
+        }
+      }
+    }
+
+    stage('Docker Build & Tag Images') {
+      agent {
+        docker {
+          image 'node-java-dev:20'
+          args '-u root'
+          reuseNode true // this means same pwd, same repo will be used in workspace @2
+        }
+      }
       steps {
         script {
           withDockerRegistry(credentialsId: 'docker-token', toolName: 'Docker') {
-                dir('server') {
-          sh 'ls -la' 
-          sh 'docker-compose -f docker-compose.yml build'
-        }
+            dir('server') {
+              sh 'echo 📦 Docker build path: $(pwd)'
+              sh 'ls -la'
+              sh 'docker-compose build'
+            }
           }
         }
       }
     }
-    
+
+    stage('Trivy Security Scan') {
+      agent {
+        docker {
+          image 'node-java-dev:20'
+          args '-u root'
+        }
+      }
+      steps {
+        script {
+          sh '''
+            echo "🔍 Finding images to scan..."
+            docker images --format "{{.Repository}}:{{.Tag}}" | grep sourav0112/ > images.txt
+
+            echo "🔍 Scanning images with Trivy..."
+            while read image; do
+              echo "📦 Scanning $image"
+              trivy image --severity HIGH,CRITICAL --exit-code 0 --no-progress "$image"
+            done < images.txt
+          '''
+        }
+      }
+    }
+
+    stage('Push to Docker Hub') {
+      steps {
+        script {
+          withDockerRegistry(credentialsId: 'docker-token', toolName: 'Docker') {
+            sh '''
+              docker images --format "{{.Repository}}:{{.Tag}}" | grep sourav0112/ > images.txt
+              while read image; do
+                echo "🚀 Pushing $image"
+                docker push "$image"
+              done < images.txt
+            '''
+          }
+        }
+      }
+    }
   }
 
   post {
     always {
-      echo "End cleanup: wiping workspace"
+      echo "🧹 Post-stage cleanup: wiping workspace"
       cleanWs()
     }
   }

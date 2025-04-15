@@ -8,11 +8,14 @@ const localIp = ip.address();
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe());
-  app.enableCors({
-    origin: ['http://localhost:3000', 'https://yourfrontend.com'],
-  });
+  // app.enableCors({
+  //   origin: ['http://localhost:3000', 'https://yourfrontend.com'],
+  // });
+
+  app.enableCors();
   let port = process.env.PORT || 8001;
-  await app.listen(port);
+  await app.listen(port, '0.0.0.0');
+
 
   console.log(`🚀 BOOKING Server is running on ${localIp} at port - ${port})`)
 }

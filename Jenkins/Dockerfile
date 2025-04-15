@@ -17,3 +17,5 @@ RUN curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/
 
   
 USER node
+
+#  named node-java-dev context for jenkins pipeline for OWASP, sonarqube

@@ -1,0 +1,58 @@
+pipeline {
+  agent any
+
+  tools {
+    git 'Default' 
+  }
+
+  environment {
+    SCANNER_HOME = tool 'sonar-scanner'
+  }
+
+  stages {
+    stage('Clean Workspace') {
+      steps {
+        cleanWs()
+      }
+    }
+
+    stage('Checkout Code') {
+      steps {
+        git branch: 'main',
+            credentialsId: 'git-token',
+            url: 'https://github.com/Sourav01112/nestjs-react-fullstack-devops.git'
+
+        // Confirm project structure after checkout
+        sh 'pwd'
+        sh 'ls -la'
+        sh 'ls -la server'
+      }
+    }
+
+    stage('Install Dependencies') {
+      agent {
+        docker {
+          image 'node-java-dev:20'
+          args '-u root'
+        }
+      }
+      steps {
+        dir('server') {
+          sh 'yarn install'
+        }
+      }
+    }
+    
+    
+    
+
+//  stages braces
+  }
+
+  post {
+    always {
+      echo "🧹 Post-stage cleanup: wiping workspace"
+      cleanWs()
+    }
+  }
+}

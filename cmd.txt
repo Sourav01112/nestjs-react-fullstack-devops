@@ -1,0 +1,63 @@
+docker run -d \
+  --name jenkins \
+  -p 8080:8080 -p 50000:50000 \
+  -v jenkins_data:/var/jenkins_home \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  --user root \
+  jenkins/jenkins:lts
+
+
+
+
+docker exec -it --user root jenkins bash 
+
+apt update
+apt install -y docker.io
+apt install -y git
+apt-get install -y openjdk-17-jdk && \
+    apt-get clean
+
+export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+export PATH=$JAVA_HOME/bin:$PATH
+
+
+
+
+
+
+
+
+
+
+//  docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
+// a496339722b0460d875efb840cb99db7
+
+
+
+// docker run -d --name sonarqube \
+//   -p 9000:9000 \
+//   sonarqube:lts-community
+
+// sonarqube token 
+// squ_399a18d991945ab131a9fd7115cfdf2d30888752
+
+
+
+
+
+
+JENKINS Setup using KIND kubernetes inside docker
+
+
+docker run -d \
+  --name jenkins \
+  -p 8080:8080 -p 50000:50000 \
+  -v jenkins_data:/var/jenkins_home \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -v /usr/local/bin/docker:/usr/local/bin/docker \
+  -v $HOME/.kube:/home/jenkins/.kube \
+  jenkins-with-docker-kubectl
+
+
+# running in root is important in order to access docker and rest
+

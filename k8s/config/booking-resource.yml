@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ResourceQuota
+metadata: 
+  name: booking-rc
+  namespace: booking
+spec:
+  hard:
+    requests.cpu: "2"
+    requests.memory: 2Gi
+    limits.cpu: "3"
+    limits.memory: 3Gi
+
+
+
+# kubectl apply -f ./namespace.yml
+# kubectl apply -f ./secrets/backend-secrets.yml
+# kubectl apply -f k8s/config/booking-resource.yml
+# kubectl apply -f k8s/backend/booking-depl.yml
+# kubectl apply -f k8s/backend/booking-depl.yml
+# kubectl apply -f k8s/backend/booking-svc.yml
