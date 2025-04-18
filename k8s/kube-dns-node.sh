@@ -7,22 +7,21 @@ if [ ! -f "$KUBECONFIG_PATH" ]; then
   exit 1
 fi
 
-SERVER=$(grep 'server:' "$KUBECONFIG_PATH" | awk '{print $2}')
-PORT=$(echo "$SERVER" | grep -oE '[0-9]+$')
-
-if ping -c 1 -W 1 host.docker.internal &>/dev/null; then
-  echo "👉 Inside Docker/Jenkins - using host.docker.internal"
+if [ "$JENKINS_HOME" != "" ] || grep -q docker /proc/1/cgroup; then
+  echo "👉 Running inside Jenkins/Docker - using host.docker.internal"
   NEW_HOST="host.docker.internal"
 else
-  echo "✅ On Mac host - using 127.0.0.1"
+  echo "✅ Running on Mac Host - using 127.0.0.1"
   NEW_HOST="127.0.0.1"
 fi
+
+SERVER=$(grep 'server:' "$KUBECONFIG_PATH" | awk '{print $2}')
+PORT=$(echo "$SERVER" | grep -oE '[0-9]+$')
 
 echo "🔧 Updating kubeconfig with host $NEW_HOST and port $PORT"
 sed -i'' "s|server: .*|server: https://$NEW_HOST:$PORT|" "$KUBECONFIG_PATH"
 
 kubectl config view --minify | grep server
-
 
 
 # #!/bin/bash
