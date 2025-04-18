@@ -1,6 +1,5 @@
 #!/bin/bash
 set -e
-cd "$(dirname "$0")"# Ensures script always runs from its own directory
 
 kubectl --insecure-skip-tls-verify=true apply -f namespace.yml
 kubectl --insecure-skip-tls-verify=true apply -f secrets/backend-secrets.yml
