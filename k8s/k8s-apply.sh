@@ -1,10 +1,14 @@
 #!/bin/bash
 set -e
+echo "🔍 Current directory: $(pwd)"
+echo "📦 Contents:"
+ls -la
 
-kubectl --insecure-skip-tls-verify=true apply -f namespace.yml
-kubectl --insecure-skip-tls-verify=true apply -f secrets/backend-secrets.yml
-kubectl --insecure-skip-tls-verify=true apply -f config/
-kubectl --insecure-skip-tls-verify=true apply -f backend/
+
+# kubectl --insecure-skip-tls-verify=true apply -f namespace.yml
+# kubectl --insecure-skip-tls-verify=true apply -f secrets/backend-secrets.yml
+# kubectl --insecure-skip-tls-verify=true apply -f config/
+# kubectl --insecure-skip-tls-verify=true apply -f backend/
 
 
 # kubectl apply -f ./namespace.yml
