@@ -5,10 +5,10 @@ echo "📦 Contents:"
 ls -la
 
 
-kubectl apply -f k8s/namespace.yml
-kubectl apply -f k8s/secrets/backend-secrets.yml
-kubectl apply -f k8s/config/
-kubectl apply -f k8s/backend/
+kubectl --insecure-skip-tls-verify=true apply -f k8s/namespace.yml
+kubectl --insecure-skip-tls-verify=true apply -f k8s/secrets/backend-secrets.yml
+kubectl --insecure-skip-tls-verify=true apply -f k8s/config/
+kubectl --insecure-skip-tls-verify=true apply -f k8s/backend/
 
 
 # kubectl apply -f ./namespace.yml
