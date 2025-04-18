@@ -1,28 +1,31 @@
 #!/bin/bash
 
-# Detect server port from existing config
 SERVER=$(grep 'server:' ~/.kube/config | awk '{print $2}')
 PORT=$(echo "$SERVER" | grep -oE '[0-9]+$')
 
-# Determine environment
 if ping -c 1 -W 1 host.docker.internal &>/dev/null; then
   echo "👉 Inside Docker/Jenkins - using host.docker.internal"
   NEW_HOST="host.docker.internal"
 else
   echo "✅ On Mac host - using 127.0.0.1"
-  NEW_HOST="127.0.0.1:12345"
+  NEW_HOST="127.0.0.1"
 fi
 
-# Patch the real kubeconfig
 sed -i '' "s|server: .*|server: https://$NEW_HOST:$PORT|" ~/.kube/config
 
-# Run kubectl
 kubectl "$@"
 
 
 
 
 
+
+
+
+# ./kube-dns-node.sh
+
+
+# cat ~/.kube/config
 
 # rm -rf ~/.kube/config
 # kind delete cluster --name 4-node-cluster

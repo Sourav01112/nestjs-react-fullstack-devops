@@ -35,7 +35,22 @@ docker image prune -f
  kubectl exec -it booking-service-fccf9bfbf-945z5 -n booking -- sh
 
 kubectl port-forward -n booking svc/booking-service 8001:80
+kubectl get pods -w
+
+
+# Waiting for deployment "booking-service" rollout to finish: 1 out of 2 new replicas have been updated...
+kubectl rollout status deployment booking-service -n booking
+
+
+kubectl scale deployment booking-service --replicas=0 -n booking
+
 
 # This command copies your local image into all the KIND nodes.
 kind load docker-image sourav0112/booking-service:v1.1 --name 4-node-cluster
+
+
+
+# Ingress
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.10.0/deploy/static/provider/kind/deploy.yaml
+kubectl get pods -n ingress-nginx
 
